@@ -6,6 +6,8 @@ import createWorkout from './createWorkout';
 import getAllWorkouts from './getAllWorkouts';
 import setCurrentWorkout from './setCurrentWorkout';
 import getCurrentWorkout from './getCurrentWorkout';
+import hasInProgressWorkout from './hasInProgressWorkout';
+import removeCurrentWorkout from './removeCurrentWorkout';
 
 
 module.exports = {
@@ -16,5 +18,7 @@ module.exports = {
     createWorkout,
     getAllWorkouts,
     setCurrentWorkout,
-    getCurrentWorkout
+    getCurrentWorkout,
+    hasInProgressWorkout,
+    removeCurrentWorkout
 }

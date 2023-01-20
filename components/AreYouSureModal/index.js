@@ -17,16 +17,16 @@ export default function AreYouSureModal({cancelButtonText, confirmButtonText, bo
         >
             <View style={styles.centeredView}>
                 <View style={styles.modalContainer}>
-                    <Text style={styles.bodyTextStyle}>{bodyText ? bodyText : 'Confirm Action?'}</Text>
+                    <Text style={styles.bodyTextStyle}>{bodyText ? bodyText : 'Are you sure?'}</Text>
                     <View style={styles.buttonSection}>
                         <Button
-                            text={cancelButtonText ? cancelButtonText : 'Cancel'}
+                            text={cancelButtonText ? cancelButtonText : 'No'}
                             type='tertiary'
                             onPress={() => setVisible(false)}
                             style={styles.buttonStyle}
                         />
                         <Button 
-                            text={confirmButtonText ? confirmButtonText : 'Confirm'}
+                            text={confirmButtonText ? confirmButtonText : 'Yes'}
                             type='primary'
                             onPress={async () => {
                                 await confirmFunction();

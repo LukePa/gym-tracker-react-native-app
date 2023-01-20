@@ -1,14 +1,30 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
 import placeholders from '../../placeholders';
+import { hasInProgressWorkout } from '../../store';
 
 import PageWithTitle from '../../components/PageWithTitle';
 import Button from '../../components/Button'
 
 
-export default function Home({navigation}) {
+export default function Home({navigation, route}) {
+  const [ workoutInProgress, setWorkoutInProgress ] = useState(false);
+
+  useEffect(() => {
+    const asyncUseEffect = async () => {
+      try {
+        const hasWorkout = await hasInProgressWorkout();
+        setWorkoutInProgress(hasWorkout);
+      } catch (e) {
+        return;
+      }
+    }
+    asyncUseEffect();
+  }, [route.path])
+
   return (
     <PageWithTitle title='GYM MANAGER'>
         <View style={styles.buttonSection}>
@@ -26,7 +42,11 @@ export default function Home({navigation}) {
             }} />
         </View>
         <View style={styles.startWorkoutFooter}>
-            <Button text='START A WORKOUT!' onPress={() => {navigation.navigate(placeholders.pages.SelectWorkoutPage)}}/>
+          { workoutInProgress ? 
+            <Button text='CONTINUE WORKOUT' onPress={() => {navigation.navigate(placeholders.pages.InProgressWorkout)}}/>
+            :
+            <Button text='START A WORKOUT' type='quartery' onPress={() => {navigation.navigate(placeholders.pages.SelectWorkoutPage)}}/>
+          }
         </View>
       <StatusBar style="auto" />
     </PageWithTitle>

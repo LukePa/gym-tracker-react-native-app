@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {View, Modal, Text, StyleSheet, Platform, NativeModules } from 'react-native';
 const { StatusBarManager } = NativeModules;
 
@@ -10,27 +10,27 @@ import Input from '../Input';
 
 import isValidEditObject from './isValidEditObject';
 
-const onFormSubmit = () => {
-    console.log('hello')
-}
+export default function AddEditExerciseModal ({editObject, visible, setVisible, confirmCallback}) {    
+    const [name, setName] = useState('');
+    const [amount, setAmount] = useState('');
+    const [units, setUnits] = useState('');
 
-export default function AddEditExerciseModal ({editObject, visible, setVisible, confirmCallback}) {
-    let initialName = '';
-    let initialAmount = '';
-    let initialUnits = ''
-
-    if(!isValidEditObject(editObject)) {
-        throw new Error('Invalid Error Object Provided To AddEditExerciseModal');
-    } else if (editObject) {
-        const initialExercise = editObject.exercises[editObject.uuid];
-        initialName = initialExercise.name;
-        initialAmount = initialExercise.amount;
-        initialUnits = initialExercise.units;
-    }
-
-    const [name, setName] = useState(initialName);
-    const [amount, setAmount] = useState(initialAmount);
-    const [units, setUnits] = useState(initialUnits);
+    useEffect(() => {
+        if (visible && editObject) {
+            if(!isValidEditObject(editObject)) {
+                throw new Error('Invalid Error Object Provided To AddEditExerciseModal');
+            } else if (editObject) {
+                const initialExercise = editObject.exercises[editObject.uuid];
+                setName(initialExercise.name);
+                setAmount(initialExercise.amount);
+                setUnits(initialExercise.units);
+            }
+        } else if (visible) {
+            setName('');
+            setAmount('');
+            setUnits('');
+        }
+    }, [visible])
 
     const onFormSubmit = async () => {
         try {
@@ -45,9 +45,6 @@ export default function AddEditExerciseModal ({editObject, visible, setVisible, 
                     await confirmCallback();
                 }
 
-                setName('');
-                setAmount('');
-                setUnits('');
                 setVisible(false);
             } else {
                 alert(editObject ? 'Exercise edit failed' : 'Exercise creation failed');
