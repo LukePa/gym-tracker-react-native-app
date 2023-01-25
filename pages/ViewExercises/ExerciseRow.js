@@ -47,7 +47,7 @@ export default function ExerciseRow({exerciseID, appState, appStateManipulators}
             setVisible={setIsDeleteModalVisible}
             cancelButtonText='No'
             confirmButtonText='Yes'
-            bodyText={`Are you sure you want to delete ${appState.exercises[exerciseID].name}?`}
+            bodyText={`Are you sure you want to delete ${appState.exercises[exerciseID] ? appState.exercises[exerciseID].name : 'this exercise'}?`}
             confirmFunction={async () => {
                 await appStateManipulators.removeExercise(exerciseID);
             }}

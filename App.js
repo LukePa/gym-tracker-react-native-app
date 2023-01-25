@@ -43,22 +43,24 @@ export default function App() {
 
   appStateManipulators.removeExercise = async (id) => {
     try {
-      delete appState.exercises[id];
+      // Remove this exercise from any workouts containing it
       Object.keys(appState.workouts).forEach((workoutID) => {
         if (!appState.workouts[workoutID].exercises) {
           return;
         }
 
-        const exerciseIndex = appState.workout[workoutID].exercises.includes(id);
+        const exerciseIndex = appState.workouts[workoutID].exercises.indexOf(id);
         if (exerciseIndex > -1) {
-          appState.workout[workoutID].exercises.splice(exerciseIndex, 1)
+          appState.workouts[workoutID].exercises.splice(exerciseIndex, 1)
         }
       })
 
+      delete appState.exercises[id];
       setAppState({...appState});
       await saveAppState(appState);
       return true;
     } catch (e) {
+      console.log(e)
       return false;
     }
   }
