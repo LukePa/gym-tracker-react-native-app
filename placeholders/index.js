@@ -14,7 +14,8 @@ placeholders.pages = {
 placeholders.storageKeys = {
     exercises: 'exercises',
     workouts: 'workouts',
-    currentWorkout: 'currentWorkout'
+    currentWorkout: 'currentWorkout',
+    appState: 'appState'
 }
 
 placeholders.colors = {

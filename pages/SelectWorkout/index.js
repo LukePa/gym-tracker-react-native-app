@@ -11,35 +11,18 @@ import Button from "../../components/Button";
 
 
 
-export default function SelectWorkout({navigation}) {
-    const [workouts, setWorkouts] = useState(null);
+export default function SelectWorkout({navigation, appState, appStateManipulators}) {
 
-    const getAndSetWorkouts = async () => {
-        const retrievedWorkouts = await getAllWorkouts();
-
-        if (workouts === false) {
-            alert('Issue occured while getting workouts');
-            navigation.navigate(placeholders.pages.HomePage);
-            return;
-        }
-
-        setWorkouts(retrievedWorkouts);
-    }
-
-    const renderWorkouts = () => {
-        if (!workouts) {
-            return null;
-        }
-
-        return Object.keys(workouts).map(id => {
+    const WorkoutsButtons = () => {
+        return Object.keys(appState.workouts).map(id => {
             return <Button 
-                        text={workouts[id].name} 
+                        text={appState.workouts[id].name} 
                         key={id} 
                         style={styles.buttonStyle} 
                         type='secondary'
                         onPress={async () => {
-                            const res = await setCurrentWorkout(id);
-                            if (res) {
+                            const success = await appStateManipulators.setCurrentWorkout(id);
+                            if (success) {
                                 navigation.navigate(placeholders.pages.InProgressWorkout);
                             } else {
                                 alert('Issue occured while selecting workout');
@@ -50,13 +33,8 @@ export default function SelectWorkout({navigation}) {
     }
 
 
-    useEffect(() => {
-        getAndSetWorkouts();
-    }, [])
-
-
     return (
-        <PageWithTitle title='What Are We Working On?!'>
+        <PageWithTitle title='What Are We Working On?'>
             <View style={styles.buttonSection}>
                 <ScrollView>
                     <Button 
@@ -65,7 +43,7 @@ export default function SelectWorkout({navigation}) {
                         style={styles.buttonStyle}
                         onPress={() => navigation.navigate(placeholders.pages.CreateWorkOutPage)} 
                     />
-                    {renderWorkouts()}
+                    <WorkoutsButtons />
                 </ScrollView>
             </View>
         </PageWithTitle>

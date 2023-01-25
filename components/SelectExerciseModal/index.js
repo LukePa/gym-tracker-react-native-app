@@ -2,20 +2,14 @@ import { Modal, View, Text, ScrollView, StyleSheet, Platform, NativeModules } fr
 const { StatusBarManager } = NativeModules;
 
 import placeholders from '../../placeholders';
-import { getAllExercises } from '../../store';
 
 import Button from '../Button';
 
 
-export default function SelectExerciseModal({visible, setVisible, onSelectCallback, exercises, setExercises}) {
-    const renderExercises = () => {
-        if (exercises === null) {
-            return <Text>Loading...</Text>
-        }
-        if (!exercises) {
-            return <Text>Something went wrong lmao</Text>
-        }
-        return Object.entries(exercises).map(([id, exerciseInfo]) => {
+export default function SelectExerciseModal({visible, setVisible, onSelectCallback, appState}) {
+
+    const ExerciseButtons = () => {
+        return Object.entries(appState.exercises).map(([id, exerciseInfo]) => {
             return (
                 <Button 
                     key={id}
@@ -45,7 +39,7 @@ export default function SelectExerciseModal({visible, setVisible, onSelectCallba
                 <View style={styles.modalContainer}>
                     <View style={styles.exercisesContainer}>
                         <ScrollView persistentScrollbar={true} >
-                            {renderExercises()}
+                            <ExerciseButtons />
                         </ScrollView>
                     </View>
                     <View style={styles.buttonContainer}>

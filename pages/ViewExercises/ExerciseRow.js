@@ -8,14 +8,14 @@ import AreYouSureModal from '../../components/AreYouSureModal';
 import AddEditExerciseModal from '../../components/AddEditExerciseModal';
 
 
-export default function ExerciseRow({exercises, exerciseID, getAndSetExercises}) {
+export default function ExerciseRow({exerciseID, appState, appStateManipulators}) {
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
     return (
         <View key={exerciseID} style={styles.exerciseButtonRow}>
           <Button 
-            text={exercises[exerciseID].name} 
+            text={appState.exercises[exerciseID].name} 
             type='tertiary' 
             style={styles.exerciseButton} 
             onPress={() => {
@@ -34,9 +34,10 @@ export default function ExerciseRow({exercises, exerciseID, getAndSetExercises})
           <AddEditExerciseModal 
             visible={isEditModalVisible}
             setVisible={setIsEditModalVisible}
-            editObject={{uuid: exerciseID, exercises}}
+            exerciseID={exerciseID}
+            appState={appState}
+            appStateManipulators={appStateManipulators}
             confirmCallback={async () => {
-              await getAndSetExercises();
               alert('Exercise edit Successful')
             }}
           />
@@ -46,10 +47,9 @@ export default function ExerciseRow({exercises, exerciseID, getAndSetExercises})
             setVisible={setIsDeleteModalVisible}
             cancelButtonText='No'
             confirmButtonText='Yes'
-            bodyText={`Are you sure you want to delete ${exercises[exerciseID].name}?`}
+            bodyText={`Are you sure you want to delete ${appState.exercises[exerciseID].name}?`}
             confirmFunction={async () => {
-                await removeExercise(exerciseID);
-                await getAndSetExercises();
+                await appStateManipulators.removeExercise(exerciseID);
             }}
           />
         </View>

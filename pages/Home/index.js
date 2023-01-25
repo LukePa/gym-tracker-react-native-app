@@ -1,29 +1,15 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
 import placeholders from '../../placeholders';
-import { hasInProgressWorkout } from '../../store';
+import { getAppState, setAppState } from '../../store';
 
 import PageWithTitle from '../../components/PageWithTitle';
 import Button from '../../components/Button'
 
 
-export default function Home({navigation, route}) {
-  const [ workoutInProgress, setWorkoutInProgress ] = useState(false);
-
-  useEffect(() => {
-    const asyncUseEffect = async () => {
-      try {
-        const hasWorkout = await hasInProgressWorkout();
-        setWorkoutInProgress(hasWorkout);
-      } catch (e) {
-        return;
-      }
-    }
-    asyncUseEffect();
-  }, [route.path])
+export default function Home({navigation, appState, setAppState}) {
 
   return (
     <PageWithTitle title='GYM MANAGER'>
@@ -40,12 +26,15 @@ export default function Home({navigation, route}) {
             <Button text='View Workouts' style={styles.buttonStyle} type='secondary' onPress={() => {
                 navigation.navigate(placeholders.pages.ViewWorkoutsPage);
             }} />
+            <Button text='WIPE' style={styles.buttonStyle} type='secondary' onPress={() => {
+              wipeData()
+            }} />
         </View>
         <View style={styles.startWorkoutFooter}>
-          { workoutInProgress ? 
-            <Button text='CONTINUE WORKOUT' onPress={() => {navigation.navigate(placeholders.pages.InProgressWorkout)}}/>
-            :
+          { appState.currentWorkout === null ? 
             <Button text='START A WORKOUT' type='quartery' onPress={() => {navigation.navigate(placeholders.pages.SelectWorkoutPage)}}/>
+            :
+            <Button text='CONTINUE WORKOUT' onPress={() => {navigation.navigate(placeholders.pages.InProgressWorkout)}}/>
           }
         </View>
       <StatusBar style="auto" />

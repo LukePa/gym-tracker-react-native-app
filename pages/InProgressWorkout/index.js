@@ -11,20 +11,20 @@ import AreYouSureModal from '../../components/AreYouSureModal';
 import AddEditExerciseModal from '../../components/AddEditExerciseModal';
 
 
-const ExercisesScrollView = ({exercises, getAndSetExercises}) => {
-    const [editExerciseVisible, setEditExerciseVisible] = useState(false);
-    const [exerciseToEdit, setExerciseToEdit] = useState(Object.keys(exercises)[0]);
+const ExercisesScrollView = ({appState, appStateManipulators}) => {
+    const [editExerciseModalVisible, setEditExerciseModalVisible] = useState(false);
+    const [exerciseToEdit, setExerciseToEdit] = useState(Object.keys(appState.currentWorkout.exercises)[0]);
 
-    const exerciseButtons = Object.keys(exercises).map(exerciseId => {
+    const exerciseButtons = Object.keys(appState.exercises).map(exerciseId => {
         return (
             <Button 
                 key={exerciseId} 
-                text={exercises[exerciseId].name}
+                text={appState.exercises[exerciseId].name}
                 type='secondary'
                 style={exerciseScrollViewStyles.exerciseButton}
                 onPress={() => {
                     setExerciseToEdit(exerciseId);
-                    setEditExerciseVisible(true);
+                    setEditExerciseModalVisible(true);
                 }}
             />
         )
@@ -35,10 +35,11 @@ const ExercisesScrollView = ({exercises, getAndSetExercises}) => {
             { exerciseButtons }
 
             <AddEditExerciseModal 
-                editObject={{uuid: exerciseToEdit, exercises}} 
-                visible={editExerciseVisible} 
-                setVisible={setEditExerciseVisible}
-                confirmCallback={getAndSetExercises}
+                appState={appState}
+                appStateManipulators={appStateManipulators}
+                exerciseID={exerciseToEdit}
+                visible={editExerciseModalVisible} 
+                setVisible={setEditExerciseModalVisible}
             />
         </ScrollView>
     )
@@ -53,50 +54,17 @@ const exerciseScrollViewStyles = StyleSheet.create({
 
 
 
-export default function InProgressWorkout({navigation}) {
-    const [workout, setWorkout] = useState(null);
-    const [exercises, setExercises] = useState(null);
+export default function InProgressWorkout({navigation, appState, appStateManipulators}) {
     const [areYouSureFinishVisible, setAreYouSureFinishVisible] = useState(false);
 
-    const getAndSetWorkout = async () => {
-        const retrievedWorkout = await getCurrentWorkout();
-        if (retrievedWorkout === false) {
-            console.log(retrievedWorkout)
-            alert('Something went wrong, navigating home');
-            navigation.navigate(placeholders.pages.HomePage);
-        } else if (retrievedWorkout === null) {
-            alert("You shouldn't be on this page, please tell Luke if you see this");
-            navigation.navigate(placeholders.pages.HomePage);
-        } else {
-            setWorkout(retrievedWorkout);
-        }
-    }
-
-    const getAndSetExercises = async () => {
-        const retrievedExercises = await getAllExercises();
-        if (retrievedExercises === false) {
-            alert('Something went wrong, navigating home');
-            navigation.navigate(placeholders.pages.HomePage);
-        } else if (retrievedExercises === null) {
-            alert("You shouldn't be on this page, please tell Luke if you see this");
-            navigation.navigate(placeholders.pages.HomePage);
-        } else {
-            setExercises(retrievedExercises);
-        }
-    }
-
-    useEffect(() => {
-        getAndSetWorkout();
-        getAndSetExercises();
-    }, [])
-
     
-    if (!exercises || !workout) {
-        return <PageWithTitle title='Loading Workout'></PageWithTitle>
+    if (!appState.currentWorkout) {
+        navigation.navigate(placeholders.pages.HomePage);
+        return <></>
     } 
 
     return (
-        <PageWithTitle title={workout.name} titleMarginTop={40} titleMarginBotton={10}> 
+        <PageWithTitle title={appState.currentWorkout.name} titleMarginTop={40} titleMarginBotton={10}> 
             <View style={styles.pageBody} >
                 <Button 
                     text='Finish Workout' 
@@ -104,7 +72,7 @@ export default function InProgressWorkout({navigation}) {
                     onPress={() => setAreYouSureFinishVisible(true)}
                 />
                 <View style={styles.exercisesContainer}>
-                    <ExercisesScrollView exercises={exercises} getAndSetExercises={getAndSetExercises}/>
+                    <ExercisesScrollView appState={appState} appStateManipulators={appStateManipulators}/>
                 </View>
             </View>
 
@@ -113,7 +81,7 @@ export default function InProgressWorkout({navigation}) {
                 visible={areYouSureFinishVisible} 
                 setVisible={setAreYouSureFinishVisible}
                 confirmFunction={async () => {
-                    await removeCurrentWorkout();
+                    await appStateManipulators.setCurrentWorkout(null);
                     navigation.navigate(placeholders.pages.HomePage);
                 }}
                 />

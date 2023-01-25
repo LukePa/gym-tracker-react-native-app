@@ -8,6 +8,9 @@ import setCurrentWorkout from './setCurrentWorkout';
 import getCurrentWorkout from './getCurrentWorkout';
 import hasInProgressWorkout from './hasInProgressWorkout';
 import removeCurrentWorkout from './removeCurrentWorkout';
+import wipeData from './wipeData';
+import getAppState from './getAppState';
+import saveAppState from './saveAppState';
 
 
 module.exports = {
@@ -20,5 +23,8 @@ module.exports = {
     setCurrentWorkout,
     getCurrentWorkout,
     hasInProgressWorkout,
-    removeCurrentWorkout
+    removeCurrentWorkout,
+    wipeData,
+    getAppState,
+    saveAppState
 }

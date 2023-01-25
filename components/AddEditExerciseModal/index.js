@@ -8,23 +8,16 @@ import { createExercise, editExercise } from '../../store';
 import Button from '../Button';
 import Input from '../Input';
 
-import isValidEditObject from './isValidEditObject';
-
-export default function AddEditExerciseModal ({editObject, visible, setVisible, confirmCallback}) {    
+export default function AddEditExerciseModal ({exerciseID, appState, appStateManipulators, visible, setVisible, confirmCallback}) {    
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [units, setUnits] = useState('');
 
     useEffect(() => {
-        if (visible && editObject) {
-            if(!isValidEditObject(editObject)) {
-                throw new Error('Invalid Error Object Provided To AddEditExerciseModal');
-            } else if (editObject) {
-                const initialExercise = editObject.exercises[editObject.uuid];
-                setName(initialExercise.name);
-                setAmount(initialExercise.amount);
-                setUnits(initialExercise.units);
-            }
+        if (visible && exerciseID) {
+            setName(appState.exercises[exerciseID].name);
+            setAmount(appState.exercises[exerciseID].amount);
+            setUnits(appState.exercises[exerciseID].units);
         } else if (visible) {
             setName('');
             setAmount('');
@@ -39,7 +32,7 @@ export default function AddEditExerciseModal ({editObject, visible, setVisible, 
                 return;
             }
 
-            const success = await editObject ? editExercise({uuid: editObject.uuid, name, amount, units}) : createExercise({name, amount, units});
+            const success = await appStateManipulators.setExercise({id: exerciseID, name, amount, units})
             if (success) {
                 if (typeof confirmCallback === 'function') {
                     await confirmCallback();
@@ -47,7 +40,7 @@ export default function AddEditExerciseModal ({editObject, visible, setVisible, 
 
                 setVisible(false);
             } else {
-                alert(editObject ? 'Exercise edit failed' : 'Exercise creation failed');
+                alert(exerciseID ? 'Exercise edit failed' : 'Exercise creation failed');
             }
         } catch (e) {
             console.log(e.message);
@@ -63,7 +56,7 @@ export default function AddEditExerciseModal ({editObject, visible, setVisible, 
         >
             <View style={styles.centeredView}>
                 <View style={styles.modalContainer}>
-                    <Text style={styles.title}>{`${editObject ? 'Edit' : 'New'} Exercise`}</Text>
+                    <Text style={styles.title}>{`${exerciseID ? 'Edit' : 'New'} Exercise`}</Text>
                     <View style={styles.formContainer}>
                         <Input 
                             keyboardType='default'
@@ -74,7 +67,7 @@ export default function AddEditExerciseModal ({editObject, visible, setVisible, 
                         <View style={styles.measurementFieldsContainer}>
                             <Input
                                 keyboardType='numeric' 
-                                placeholder={`${editObject ? '' : 'Starting '}Amount`} 
+                                placeholder={`${exerciseID ? '' : 'Starting '}Amount`} 
                                 value={amount} 
                                 onChangeValue={setAmount} 
                                 style={styles.amountInput} 

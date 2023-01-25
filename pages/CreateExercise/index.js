@@ -3,32 +3,34 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
 import placeholders from '../../placeholders';
-import { createExercise } from '../../store';
 
 import PageWithTitle from '../../components/PageWithTitle';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 
-export default function CreateExercise({ navigation }) {
+export default function CreateExercise({ navigation, appState, appStateManipulators}) {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [units, setUnits] = useState('');
 
   const onFormSubmit = async () => {
     try{
-      if (name && amount && units) {
-        const success = await createExercise({name, amount, units})
-        if (success) {
-          navigation.replace(placeholders.pages.ViewExercisesPage);
-        } else {
-          alert('Exercise creation failed')
-        }
+      if (!(name && amount && units)) {
+        alert('Please fill in all missing values');
+        return false; 
+      }
+
+      const success = await appStateManipulators.setExercise({name, amount, units});
+      if (success) {
+        navigation.navigate(placeholders.pages.HomePage);
+        return true;
       } else {
-        alert('Please fill in all missing values')
+        alert('Exercise creation failed');
+        return false;
       }
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
     }
     
   }

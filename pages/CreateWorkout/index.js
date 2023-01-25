@@ -10,29 +10,17 @@ import Button from '../../components/Button';
 import Input from '../../components/Input';
 import SelectExerciseModal from '../../components/SelectExerciseModal';
 
-export default function CreateWorkout({navigation}) {
+export default function CreateWorkout({navigation, appState, appStateManipulators}) {
   const [name, setName] = useState('');
   const [exercises, setExercises] = useState([]);
-  const [allExercises, setAllExercises] = useState(null);
-  const [selectExerciseVisible, setSelectExerciseVisible] = useState(false);
+  const [selectExerciseModalVisible, setSelectExerciseModalVisible] = useState(false);
 
-  const getAndSetAllExercises = async () => {
-    const res = await getAllExercises();
-    setAllExercises(res);
-  }
-
-  const renderExercises = () => {
-    if (exercises && exercises.length > 0 && allExercises === null) {
-      return <Text>Loading Exercises Data...</Text>
-    } 
-    if (exercises && exercises.length > 0 && !allExercises) {
-      return <Text>Lmao something went wrong</Text>
-    }
+  const ExercisesButtons = () => {
     return exercises.map((id) => {
       return <Button 
                 key={id} 
-                text={allExercises[id].name} 
-                type='secondary'
+                text={appState.exercises[id].name} 
+                type='primary'
                 style={styles.exerciseButton}
                 onPress={() => {
                   const exercisesCopy = exercises;
@@ -56,15 +44,15 @@ export default function CreateWorkout({navigation}) {
       return;
     }
 
-    const res = await createWorkout({name, exercises});
-    if (res === true) {
+    const success = await appStateManipulators.setWorkout({name, exercises});
+    if (success === true) {
       navigation.navigate(placeholders.pages.HomePage);
+      return true;
+    } else {
+      alert('Workout creation failed');
+      return false;
     }
   }
-
-  useEffect(() => {
-    getAndSetAllExercises()
-  }, [])
 
   return (
     <PageWithTitle title='Lets Create A Workout!!' titleMarginTop={80} titleMarginBotton={40}>
@@ -76,11 +64,11 @@ export default function CreateWorkout({navigation}) {
           onChangeValue={(value) => setName(value)}
         />
 
-        <Button type='secondary' text='+ Add An Exercise' onPress={() => setSelectExerciseVisible(true)} />
+        <Button type='secondary' text='+ Add An Exercise' onPress={() => setSelectExerciseModalVisible(true)} />
         <View style={styles.exercisesContainer}>
           <ScrollView persistentScrollbar={true}>
             <Text style={styles.removeExerciseInstructionText}>EXERCISES (press to remove)</Text>
-            {renderExercises()}
+            <ExercisesButtons />
           </ScrollView>
         </View>
 
@@ -105,10 +93,9 @@ export default function CreateWorkout({navigation}) {
       <StatusBar style="auto" />
 
       <SelectExerciseModal 
-        visible={selectExerciseVisible} 
-        setVisible={setSelectExerciseVisible} 
-        exercises={allExercises} 
-        setExercises={setAllExercises}
+        visible={selectExerciseModalVisible} 
+        setVisible={setSelectExerciseModalVisible} 
+        appState={appState}
         onSelectCallback={(id) => {
           if (!exercises.includes(id)){
             setExercises([...exercises, id])
