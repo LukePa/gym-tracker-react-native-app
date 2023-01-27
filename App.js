@@ -8,7 +8,6 @@ import placeholders from './placeholders';
 import { getAppState, saveAppState, wipeData } from './store';
 
 import Home from './pages/Home';
-import CreateExercise from './pages/CreateExercise';
 import CreateWorkout from './pages/CreateWorkout';
 import ViewExercises from './pages/ViewExercises';
 import ViewWorkouts from './pages/ViewWorkouts';
@@ -98,18 +97,20 @@ export default function App() {
 
   appStateManipulators.setCurrentWorkout = async (id) => {
     try {
+      let currentWorkout = {}
+
       if (id === null || id === undefined) {
-        appState.currentWorkout = null;
+        currentWorkout = null;
       } else if (!(typeof id === 'string' && appState.workouts[id] !== undefined)) {
         return false;
       } else {
-        appState.currentWorkout = appState.workouts[id];
-        appState.currentWorkout.exercises.map((exercise) => {
-          return {id: exercise, checked: false};
-        });
+        currentWorkout.name = appState.workouts[id].name;
+        currentWorkout.exercises = appState.workouts[id].exercises.map(exercise => {
+          return {id: exercise, checked: false}
+        })
       }
 
-      setAppState({...appState});
+      setAppState({...appState, currentWorkout});
       await saveAppState(appState);
       return true;
     } catch (e) {

@@ -24,6 +24,9 @@ export default function Home({navigation, appState, appStateManipulators}) {
             <Button text='WIPE' style={styles.buttonStyle} type='secondary' onPress={() => {
               appStateManipulators.resetData();
             }} />
+            <Button text='RESET WORKOUT' style={styles.buttonStyle} type='secondary' onPress={() => {
+              appStateManipulators.setCurrentWorkout(null);
+            }} />
         </View>
         <View style={styles.startWorkoutFooter}>
           { appState.currentWorkout === null ? 

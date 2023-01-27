@@ -7,7 +7,7 @@ import placeholders from '../../placeholders';
 import Button from '../Button';
 import Input from '../Input';
 
-export default function AddEditExerciseModal ({exerciseID, appState, appStateManipulators, visible, setVisible, confirmCallback}) {    
+export default function AddEditExerciseModal ({exerciseID, appState, appStateManipulators, visible, setVisible, confirmCallback, cancelCallback}) {    
     const [name, setName] = useState('');
     const [amount, setAmount] = useState('');
     const [units, setUnits] = useState('');
@@ -23,6 +23,16 @@ export default function AddEditExerciseModal ({exerciseID, appState, appStateMan
             setUnits('');
         }
     }, [visible])
+
+
+
+    const onFormCancel = async () => {
+        if (typeof cancelCallback === 'function') {
+            await cancelCallback();
+        }
+
+        setVisible(false);
+    }
 
     const onFormSubmit = async () => {
         try {
@@ -50,7 +60,7 @@ export default function AddEditExerciseModal ({exerciseID, appState, appStateMan
         <Modal
             animationType='slide'
             visible={visible}
-            onRequestClose={() => setVisible(false)}
+            onRequestClose={onFormCancel}
             transparent={true}
         >
             <View style={styles.centeredView}>
@@ -81,9 +91,7 @@ export default function AddEditExerciseModal ({exerciseID, appState, appStateMan
                         </View>
                     </View>
                     <View style={styles.buttonContainer}>
-                        <Button text='Cancel' style={styles.button} type='tertiary' onPress={() => {
-                            setVisible(false);
-                        }}/>
+                        <Button text='Cancel' style={styles.button} type='tertiary' onPress={onFormCancel}/>
                         <Button text='Save' style={styles.button} type='primary' onPress={onFormSubmit}/>
                     </View>
                 </View>

@@ -95,6 +95,7 @@ export default function CreateWorkout({navigation, appState, appStateManipulator
         visible={selectExerciseModalVisible} 
         setVisible={setSelectExerciseModalVisible} 
         appState={appState}
+        appStateManipulators={appStateManipulators}
         onSelectCallback={(id) => {
           if (!exercises.includes(id)){
             setExercises([...exercises, id])

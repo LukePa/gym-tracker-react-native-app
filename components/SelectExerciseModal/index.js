@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { Modal, View, Text, ScrollView, StyleSheet, Platform, NativeModules } from 'react-native';
 const { StatusBarManager } = NativeModules;
 
 import placeholders from '../../placeholders';
 
 import Button from '../Button';
+import AddEditExerciseModal from '../AddEditExerciseModal';
 
 
-export default function SelectExerciseModal({visible, setVisible, onSelectCallback, appState}) {
+export default function SelectExerciseModal({visible, setVisible, onSelectCallback, appState, appStateManipulators}) {
+    const [addExerciseModalVisible, setAddExerciseModalVisible] = useState(false);
 
     const ExerciseButtons = () => {
         return Object.entries(appState.exercises).map(([id, exerciseInfo]) => {
@@ -29,6 +32,7 @@ export default function SelectExerciseModal({visible, setVisible, onSelectCallba
     }
 
     return (
+        <>
         <Modal
             animationType='slide'
             visible={visible}
@@ -39,6 +43,10 @@ export default function SelectExerciseModal({visible, setVisible, onSelectCallba
                 <View style={styles.modalContainer}>
                     <View style={styles.exercisesContainer}>
                         <ScrollView persistentScrollbar={true} >
+                            <Button text='+ Add New Exercise' type='secondary' style={styles.exerciseButton} onPress={() => {
+                                setVisible(false);
+                                setAddExerciseModalVisible(true);
+                            }}/>
                             <ExerciseButtons />
                         </ScrollView>
                     </View>
@@ -47,7 +55,23 @@ export default function SelectExerciseModal({visible, setVisible, onSelectCallba
                     </View>
                 </View>
             </View>
+
+            
         </Modal>
+
+        <AddEditExerciseModal 
+            visible={addExerciseModalVisible}
+            setVisible={setAddExerciseModalVisible}
+            appState={appState}
+            appStateManipulators={appStateManipulators}
+            confirmCallback={() => {
+                setVisible(true);
+            }}
+            cancelCallback={() => {
+                setVisible(true);
+            }}
+        />
+        </>
     );
 }
 
@@ -63,7 +87,7 @@ const styles = StyleSheet.create({
         flex: 0,
         justifyContent: 'space-between',
         alignItems: 'center',
-        backgroundColor: placeholders.colors.lightAccent.standard,
+        backgroundColor: placeholders.colors.darkShade.standard,
         elevation: 5,
         height: '80%',
         width: '80%',
@@ -74,7 +98,7 @@ const styles = StyleSheet.create({
         flex: 0,
         height: '80%',
         width: '80%',
-        backgroundColor: placeholders.colors.lightShade.standard,
+        backgroundColor: placeholders.colors.lightAccent.standard,
         padding: 10,
         marginTop: 20,
         borderRadius: 5
