@@ -1,49 +1,80 @@
-import { useState, useEffect, useLayoutEffect } from 'react'
+import { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet} from 'react-native';
+import { ScrollView, View, StyleSheet} from 'react-native';
 
 import placeholders from '../../placeholders';
 
 import PageWithTitle from '../../components/PageWithTitle';
 import Button from '../../components/Button';
 import AddEditExerciseModal from '../../components/AddEditExerciseModal';
-
-import ExerciseRow from './ExerciseRow';
+import AreYouSureModal from '../../components/AreYouSureModal';
 
 
 export default function ViewExercises({navigation, appState, appStateManipulators}) {
-  const [isAddExerciseModalVisible, setIsAddExerciseModalVisible] = useState(false);
+  const [exerciseToEdit, setExerciseToEdit] = useState(null);
+  const [isAddEditExerciseModalVisible, setIsAddEditExerciseModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
-  const ExercisesRows = () => {
+
     const exerciseButtons = Object.keys(appState.exercises).map((exerciseID) => {
       return (
-        <ExerciseRow exerciseID={exerciseID} appState={appState} appStateManipulators={appStateManipulators} key={exerciseID}/>
+          <View key={exerciseID} style={styles.exerciseButtonRow}>
+            <Button 
+              text={appState.exercises[exerciseID].name} 
+              type='tertiary' 
+              style={styles.exerciseButton} 
+              onPress={() => {
+                setExerciseToEdit(exerciseID);
+                setIsAddEditExerciseModalVisible(true);
+              }}
+            />
+            <Button 
+              text='x'
+              type='secondary'
+              style={styles.removeExerciseButton}
+              onPress={() => {
+                setExerciseToEdit(exerciseID)
+                setIsDeleteModalVisible(true);
+              }}
+            />
+          </View>
       )
     })
 
-    return (
+  
+  return (
+    <PageWithTitle title='Saved Exercises'>
       <ScrollView style={styles.exerciseButtonsScrollView}>
         <Button 
           type='quartery'
           text='+ Create New Exercise'
           style={styles.addExerciseButton}
-          onPress={() => {setIsAddExerciseModalVisible(true)}}
+          onPress={() => {
+            setExerciseToEdit(null);
+            setIsAddEditExerciseModalVisible(true);
+          }}
         />
         {exerciseButtons}
       </ScrollView>
-    )
-  }
-  
-  return (
-    <PageWithTitle title='Saved Exercises'>
-      <ExercisesRows />
       <StatusBar style="auto" />
 
       <AddEditExerciseModal 
-        visible={isAddExerciseModalVisible}
-        setVisible={setIsAddExerciseModalVisible}
+        exerciseID={exerciseToEdit}
+        visible={isAddEditExerciseModalVisible}
+        setVisible={setIsAddEditExerciseModalVisible}
+        appState={appState}
         appStateManipulators={appStateManipulators}
       />
+      <AreYouSureModal 
+            visible={isDeleteModalVisible}
+            setVisible={setIsDeleteModalVisible}
+            cancelButtonText='No'
+            confirmButtonText='Yes'
+            bodyText={`Are you sure you want to delete ${appState.exercises[exerciseToEdit] ? appState.exercises[exerciseToEdit].name : 'this exercise'}?`}
+            confirmFunction={async () => {
+                await appStateManipulators.removeExercise(exerciseToEdit);
+            }}
+          />
     </PageWithTitle>
   );
 }
@@ -55,6 +86,19 @@ const styles = StyleSheet.create({
 
   addExerciseButton: {
     marginBottom: 10
+  },
+
+  exerciseButtonRow: {
+    marginBottom: 10,
+    flexDirection: 'row'
+  },
+
+  exerciseButton: {
+      flex: 1
+  },
+
+  removeExerciseButton: {
+      paddingHorizontal: 10
   }
 
 });

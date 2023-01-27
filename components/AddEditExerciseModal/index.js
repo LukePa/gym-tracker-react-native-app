@@ -3,7 +3,6 @@ import {View, Modal, Text, StyleSheet, Platform, NativeModules } from 'react-nat
 const { StatusBarManager } = NativeModules;
 
 import placeholders from '../../placeholders';
-import { createExercise, editExercise } from '../../store';
 
 import Button from '../Button';
 import Input from '../Input';

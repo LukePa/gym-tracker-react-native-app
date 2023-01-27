@@ -1,33 +1,28 @@
-import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 
 import placeholders from '../../placeholders';
-import { getAppState, setAppState } from '../../store';
 
 import PageWithTitle from '../../components/PageWithTitle';
 import Button from '../../components/Button'
 
 
-export default function Home({navigation, appState, setAppState}) {
+export default function Home({navigation, appState, appStateManipulators}) {
 
   return (
     <PageWithTitle title='GYM MANAGER'>
         <View style={styles.buttonSection}>
-            <Button text='Create New Exercise' style={styles.buttonStyle} type='secondary' onPress={() => {
-                navigation.navigate(placeholders.pages.CreateExercisePage);
+            <Button text='EXERCISES' style={styles.buttonStyle} type='secondary' onPress={() => {
+                navigation.navigate(placeholders.pages.ViewExercisesPage);
             }} />
             <Button text='Create New Workout' style={styles.buttonStyle} type='secondary' onPress={() => {
                 navigation.navigate(placeholders.pages.CreateWorkOutPage);
-            }} />
-            <Button text='View Exercises' style={styles.buttonStyle} type='secondary' onPress={() => {
-                navigation.navigate(placeholders.pages.ViewExercisesPage);
             }} />
             <Button text='View Workouts' style={styles.buttonStyle} type='secondary' onPress={() => {
                 navigation.navigate(placeholders.pages.ViewWorkoutsPage);
             }} />
             <Button text='WIPE' style={styles.buttonStyle} type='secondary' onPress={() => {
-              wipeData()
+              appStateManipulators.resetData();
             }} />
         </View>
         <View style={styles.startWorkoutFooter}>

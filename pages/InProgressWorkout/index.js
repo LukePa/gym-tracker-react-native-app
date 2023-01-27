@@ -1,9 +1,7 @@
-import {useState, useEffect} from 'react';
-import { StatusBar } from 'expo-status-bar';
+import {useState} from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 import placeholders from '../../placeholders';
-import { getCurrentWorkout, getAllExercises, removeCurrentWorkout } from '../../store';
 
 import PageWithTitle from '../../components/PageWithTitle';
 import Button from '../../components/Button';
@@ -14,16 +12,16 @@ import AddEditExerciseModal from '../../components/AddEditExerciseModal';
 const ExercisesScrollView = ({appState, appStateManipulators}) => {
     const [editExerciseModalVisible, setEditExerciseModalVisible] = useState(false);
     const [exerciseToEdit, setExerciseToEdit] = useState(Object.keys(appState.currentWorkout.exercises)[0]);
-
-    const exerciseButtons = Object.keys(appState.exercises).map(exerciseId => {
+    console.log(appState.currentWorkout.exercises)
+    const exerciseButtons = Object.keys(appState.currentWorkout.exercises).map(exercise => {
         return (
             <Button 
-                key={exerciseId} 
-                text={appState.exercises[exerciseId].name}
+                key={exercise.id} 
+                text={appState.exercises[exercise.id].name}
                 type='secondary'
                 style={exerciseScrollViewStyles.exerciseButton}
                 onPress={() => {
-                    setExerciseToEdit(exerciseId);
+                    setExerciseToEdit(exercise.id);
                     setEditExerciseModalVisible(true);
                 }}
             />
@@ -32,7 +30,7 @@ const ExercisesScrollView = ({appState, appStateManipulators}) => {
 
     return (
         <ScrollView>
-            { exerciseButtons }
+            {exerciseButtons}
 
             <AddEditExerciseModal 
                 appState={appState}

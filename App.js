@@ -1,12 +1,11 @@
 import {useState, useEffect} from 'react';
 import { Text } from 'react-native';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator  } from '@react-navigation/stack';
 import uuid from 'react-native-uuid';
 
 import placeholders from './placeholders';
 import { getAppState, saveAppState, wipeData } from './store';
-import { isValidAppState } from './utils/isValidAppState';
 
 import Home from './pages/Home';
 import CreateExercise from './pages/CreateExercise';
@@ -21,6 +20,22 @@ const Stack = createStackNavigator ();
 
 export default function App() {
   const [ appState, setAppState ] = useState(null);
+
+  useEffect(() => {
+    const asyncUseEffect = async () => {
+      const retrievedState = await getAppState();
+      setAppState(retrievedState)
+    }
+
+    try {
+      asyncUseEffect();
+    } catch(e) {
+      console.log(e)
+    }
+    
+  }, [])
+
+
 
   const appStateManipulators = {}
 
@@ -89,6 +104,9 @@ export default function App() {
         return false;
       } else {
         appState.currentWorkout = appState.workouts[id];
+        appState.currentWorkout.exercises.map((exercise) => {
+          return {id: exercise, checked: false};
+        });
       }
 
       setAppState({...appState});
@@ -99,21 +117,15 @@ export default function App() {
     }
   }
 
-
-
-  useEffect(() => {
-    const asyncUseEffect = async () => {
-      const retrievedState = await getAppState();
-      setAppState(retrievedState)
-    }
-
+  appStateManipulators.resetData = async () => {
     try {
-      asyncUseEffect();
+      await wipeData();
+      const resetAppState = await getAppState();
+      setAppState(resetAppState);
     } catch(e) {
-      console.log(e)
+      return false;
     }
-    
-  }, [])
+  }
 
 
 
@@ -126,13 +138,6 @@ export default function App() {
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen name={placeholders.pages.HomePage}>
           {(props) => <Home appState={appState} appStateManipulators={appStateManipulators} {...props} />}
-        </Stack.Screen>
-        <Stack.Screen name={placeholders.pages.CreateExercisePage}>
-          {props => <CreateExercise 
-            appState={appState}
-            appStateManipulators={appStateManipulators}
-            {...props} 
-          />}
         </Stack.Screen>
         <Stack.Screen name={placeholders.pages.CreateWorkOutPage}>
           {(props) => <CreateWorkout appState={appState} appStateManipulators={appStateManipulators} {...props} />}

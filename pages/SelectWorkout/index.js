@@ -1,9 +1,6 @@
-import { useState, useEffect, useLayoutEffect } from 'react'
-import { StatusBar } from 'expo-status-bar';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 
 import placeholders from '../../placeholders';
-import { getAllWorkouts, setCurrentWorkout } from '../../store';
 
 import PageWithTitle from "../../components/PageWithTitle";
 import Button from "../../components/Button";

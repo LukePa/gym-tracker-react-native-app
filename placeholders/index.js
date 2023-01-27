@@ -3,7 +3,6 @@ const placeholders = {};
 
 placeholders.pages = {
     HomePage: 'Home',
-    CreateExercisePage: 'CreateExercise',
     CreateWorkOutPage: 'CreateWorkout',
     ViewWorkoutsPage: 'ViewWorkouts',
     ViewExercisesPage: 'ViewExercises',
