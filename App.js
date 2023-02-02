@@ -67,7 +67,21 @@ export default function App() {
         if (exerciseIndex > -1) {
           appState.workouts[workoutID].exercises.splice(exerciseIndex, 1)
         }
-      })
+      });
+
+      // Remove this exercise from the current workout if it contains it
+      if (appState.currentWorkout && appState.currentWorkout.exercises) {
+        let foundIndex = -1;
+        appState.currentWorkout.exercises.forEach((exercise, index) => {
+          if (exercise.id === id) {
+            foundIndex = index;
+          }
+        });
+
+        if (foundIndex > -1) {
+          appState.currentWorkout.exercises.splice(foundIndex, 1);
+        }
+      }
 
       delete appState.exercises[id];
       setAppState({...appState});
@@ -113,6 +127,36 @@ export default function App() {
       setAppState({...appState, currentWorkout});
       await saveAppState(appState);
       return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  appStateManipulators.setCurrentWorkoutExerciseChecked = async ({id, checked}) => {
+    try {
+      if (id === undefined || checked === undefined) {
+        return false;
+      }
+
+      if (!appState.currentWorkout || !appState.currentWorkout.exercises) {
+        return false;
+      }
+
+      let foundExerciseIndex = -1;
+      appState.currentWorkout.exercises.forEach((exercise, index) => {
+        if (exercise.id === id) {
+          foundExerciseIndex = index;
+        }
+      });
+
+      if (foundExerciseIndex === -1) {
+        return false;
+      }
+
+      const currentWorkout = {...appState.currentWorkout};
+      currentWorkout.exercises[foundExerciseIndex].checked = checked;
+      setAppState({...appState, currentWorkout});
+      await saveAppState(appState);
     } catch (e) {
       return false;
     }

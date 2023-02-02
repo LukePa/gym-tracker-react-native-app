@@ -7,12 +7,13 @@ import PageWithTitle from '../../components/PageWithTitle';
 import Button from '../../components/Button';
 import AreYouSureModal from '../../components/AreYouSureModal';
 import AddEditExerciseModal from '../../components/AddEditExerciseModal';
+import CheckboxButton from '../../components/CheckboxButton';
 
 
 
 export default function InProgressWorkout({navigation, appState, appStateManipulators}) {
     const [editExerciseModalVisible, setEditExerciseModalVisible] = useState(false);
-    const [exerciseToEdit, setExerciseToEdit] = useState(appState.currentWorkout.exercises[0]);
+    const [exerciseToEdit, setExerciseToEdit] = useState(appState.currentWorkout.exercises[0].id);
     const [areYouSureFinishVisible, setAreYouSureFinishVisible] = useState(false);
 
     if (!appState.currentWorkout) {
@@ -23,16 +24,20 @@ export default function InProgressWorkout({navigation, appState, appStateManipul
 
     const exerciseButtons = appState.currentWorkout.exercises.map(exercise => {
         return (
-            <Button 
-                key={exercise.id} 
-                text={appState.exercises[exercise.id].name}
-                type='secondary'
-                style={styles.exerciseButton}
-                onPress={() => {
-                    setExerciseToEdit(exercise.id);
-                    setEditExerciseModalVisible(true);
-                }}
-            />
+            <View style={styles.exerciseButtonsContainer} key={exercise.id} >
+                <CheckboxButton isChecked={exercise.checked} setChecked={(value) => {
+                    appStateManipulators.setCurrentWorkoutExerciseChecked({id: exercise.id, checked: value});
+                }}/>
+                <Button 
+                    text={appState.exercises[exercise.id].name}
+                    type='secondary'
+                    style={styles.exerciseButton}
+                    onPress={() => {
+                        setExerciseToEdit(exercise.id);
+                        setEditExerciseModalVisible(true);
+                    }}
+                />
+            </View>
         )
     })
 
@@ -57,8 +62,8 @@ export default function InProgressWorkout({navigation, appState, appStateManipul
                 visible={areYouSureFinishVisible} 
                 setVisible={setAreYouSureFinishVisible}
                 confirmFunction={async () => {
-                    await appStateManipulators.setCurrentWorkout(null);
                     navigation.navigate(placeholders.pages.HomePage);
+                    await appStateManipulators.setCurrentWorkout(null);
                 }}
                 />
         </PageWithTitle>
@@ -94,7 +99,13 @@ const styles = StyleSheet.create({
         borderRadius: 5
     },
 
+    exerciseButtonsContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        marginBottom: 5,
+    },
+
     exerciseButton: {
-        marginBottom: 5
+        flex: 1
     }
 });
