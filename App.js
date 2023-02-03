@@ -109,6 +109,26 @@ export default function App() {
     }
   }
 
+  appStateManipulators.removeWorkout = async (id) => {
+    try {
+      if (typeof id !== 'string') {
+        return false;
+      }
+      if (!Object.keys(appState.workouts).includes(id)) {
+        return false;
+      }
+
+      const workouts = {...appState.workouts};
+      delete workouts[id];
+      setAppState({...appState, workouts});
+      await saveAppState(appState);
+      return true;
+
+    } catch (e) {
+      return false;
+    }
+  }
+
   appStateManipulators.setCurrentWorkout = async (id) => {
     try {
       let currentWorkout = {}

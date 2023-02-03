@@ -9,9 +9,11 @@ import Button from '../../components/Button';
 import Input from '../../components/Input';
 import SelectExerciseModal from '../../components/SelectExerciseModal';
 
-export default function CreateWorkout({navigation, appState, appStateManipulators}) {
-  const [name, setName] = useState('');
-  const [exercises, setExercises] = useState([]);
+export default function CreateWorkout({navigation, appState, appStateManipulators, route}) {
+  const workoutID = route.params ? (route.params.workoutID || null) : null;
+  
+  const [name, setName] = useState(workoutID ? appState.workouts[workoutID].name : '');
+  const [exercises, setExercises] = useState(workoutID ? appState.workouts[workoutID].exercises : []);
   const [selectExerciseModalVisible, setSelectExerciseModalVisible] = useState(false);
 
   const ExercisesButtons = () => {
@@ -43,7 +45,7 @@ export default function CreateWorkout({navigation, appState, appStateManipulator
       return;
     }
 
-    const success = await appStateManipulators.setWorkout({name, exercises});
+    const success = await appStateManipulators.setWorkout({id: workoutID, name, exercises});
     if (success === true) {
       navigation.navigate(placeholders.pages.HomePage);
       return true;
@@ -54,7 +56,11 @@ export default function CreateWorkout({navigation, appState, appStateManipulator
   }
 
   return (
-    <PageWithTitle title='Lets Create A Workout!!' titleMarginTop={80} titleMarginBotton={40}>
+    <PageWithTitle 
+      title={workoutID ? appState.workouts[workoutID].name : 'Lets Create A Workout!!'} 
+      titleMarginTop={80} 
+      titleMarginBotton={40}
+    >
       <View style={styles.pageBodyContainer}>
         <Input 
           placeholder='Workout name' 

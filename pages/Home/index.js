@@ -15,10 +15,7 @@ export default function Home({navigation, appState, appStateManipulators}) {
             <Button text='EXERCISES' style={styles.buttonStyle} type='secondary' onPress={() => {
                 navigation.navigate(placeholders.pages.ViewExercisesPage);
             }} />
-            <Button text='Create New Workout' style={styles.buttonStyle} type='secondary' onPress={() => {
-                navigation.navigate(placeholders.pages.CreateWorkOutPage);
-            }} />
-            <Button text='View Workouts' style={styles.buttonStyle} type='secondary' onPress={() => {
+            <Button text='WORKOUTS' style={styles.buttonStyle} type='secondary' onPress={() => {
                 navigation.navigate(placeholders.pages.ViewWorkoutsPage);
             }} />
             <Button text='WIPE' style={styles.buttonStyle} type='secondary' onPress={() => {
